@@ -1,23 +1,18 @@
-# Windows thumbnail cache files
-Thumbs.db
-ehthumbs.db
-ehthumbs_vista.db
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Folder config file
-Desktop.ini
+# dependencies
+/node_modules
+/npm-debug.log*
+/yarn-error.log
+/yarn.lock
+/package-lock.json
 
-# Recycle Bin used on file shares
-$RECYCLE.BIN/
+# production
+/dist
 
-# Windows Installer files
-*.cab
-*.msi
-*.msm
-*.msp
+# misc
+.DS_Store
 
-# Windows shortcuts
-*.lnk
-
-# =========================
-# Operating System Files
-# =========================
+# umi
+.umi
+.umi-production
