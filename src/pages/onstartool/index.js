@@ -199,7 +199,7 @@ class Tool extends Component {
 
     handleData(value) {
         let data = value.replace(/#|(><)/g, '')
-        data = data.replace(/\*/g, "")
+        data = data.replace(/\#/g, "")
             .replace(/\t/g, ',')
             .replace(/(^\s*)|(\s*$)/g, "")
             .split('\n')

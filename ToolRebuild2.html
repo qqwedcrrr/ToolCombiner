@@ -360,7 +360,8 @@
 		    this.handleFilename = this.handleFilename.bind(this);
 		    this.handleSubmit = this.handleSubmit.bind(this);
 		    this.handleDragEnter = this.handleDragEnter.bind(this);
-		    this.handleDragLeave = this.handleDragLeave.bind(this);
+				this.handleDragLeave = this.handleDragLeave.bind(this);
+				this.handleDrop = this.handleDrop.bind(this);
 		  }
 
 		  handleFilename(e) {
@@ -374,16 +375,18 @@
 
 		  handleDragOver(e) {
 		  	e.preventDefault()
-		  	
+		  	console.log(this)
 		  }
 
 		  handleDragEnter(e) {	
-		  	this.setState({bgcolor:'#cbeddf'},)
+				this.setState({bgcolor:'#cbeddf'})
+				console.log(this)
 		  }
 
 
 		  handleDrop(e) {
-		  	e.preventDefault();
+				e.preventDefault();
+				console.log(this)
 		  	this.setState({bgcolor:'#f7f5ed'});
 		  	let fileList = e.dataTransfer.files;
 		  	if(fileList.length == 0){ 
@@ -412,7 +415,7 @@
 						<div className = "row" >
 							<div>
 								<p>Please choose the client</p>
-    							<input type="checkbox" className="" onChange={this.handleFilename} id="filename" />
+    							<input type="text" className="" onChange={this.handleFilename} id="filename" />
 							</div>
 							<p className="headerPad">Please put the CWS here</p>
 							<div style={{background:this.state.bgcolor}} className="dragArea"  onDragOver={this.handleDragOver} onDragEnter={this.handleDragEnter} 
