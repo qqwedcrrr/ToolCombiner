@@ -8,4 +8,7 @@ export default {
       },
     };
   },
+  plugins: [
+    require('dva-logger'),
+  ]
 }

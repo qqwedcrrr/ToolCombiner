@@ -28,5 +28,10 @@
   },
   "engines": {
     "node": ">=8.0.0"
+  },
+  "dependencies": {
+    "dva-logger": "^1.0.0",
+    "js-xlsx": "^0.8.22",
+    "xlsx": "^0.14.0"
   }
 }
