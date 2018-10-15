@@ -16,6 +16,23 @@
   margin-top: 1.8em;
   list-style: none;
   line-height: 1.5em;
+  display: flex;
+  justify-content: space-between
+}
+.list>li{
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  border-radius: 6px;
+  padding: 4px 6px;
+  text-decoration: none;
+}
+li>a{
+  color: rgb(247, 255, 252);
+  text-decoration: none;
+  font-family: inherit;
+}
+.linkcontainer{
+  width: 600px;
+  display: inline-block;
 }
 
 .list code {

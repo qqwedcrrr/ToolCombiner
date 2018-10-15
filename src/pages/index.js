@@ -1,13 +1,22 @@
 import styles from './index.css';
+import Link from 'umi/link';
+import router from 'umi/router';
+import {Button} from 'antd'
 
 export default function() {
+  let autoRoute = localStorage.getItem('autoRoute')
+  if(autoRoute !==null)
+    router.push(autoRoute)
   return (
     <div className={styles.normal}>
       <div className={styles.welcome} />
-      <ul className={styles.list}>
-        <li>To get started, edit <code>src/pages/index.js</code> and save to reload.</li>
-        <li><a href="https://umijs.org/guide/getting-started.html">Getting Started</a></li>
-      </ul>
+      <p>To get started, choose a tool to go!</p>
+      <div className={styles.linkcontainer}>
+        <ul className={styles.list}>
+          <li><Button><Link to="/nespresso" className={styles.gotolink}>Go to Nespresso Tool</Link></Button></li>
+          <li><Button><Link to="/onstar" className={styles.gotolink}>Go to OnStar Tool</Link></Button></li>
+        </ul>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,9 @@
 import styles from './index.css';
 import { Component } from 'react';
-import XLSX from 'xlsx'
+import XLSX from 'xlsx';
+import router from 'umi/router';
+import {Button} from 'antd'
+
 
 class Tool extends Component {
     constructor(props) {
@@ -16,12 +19,12 @@ class Tool extends Component {
     }
 
     handleDragLeave(e) {
-        setTimeout(()=>{
+        setTimeout(() => {
             this.setState({
                 bgcolor: '#e6a23c'
             })
-        },2000)
-        
+        }, 2000)
+
     }
 
     handleDragOver(e) {
@@ -42,7 +45,7 @@ class Tool extends Component {
         else {
             let filename = file[0].name.match(/[0-9][0-9][0-9][0-9]/);
             this.setState({
-                filename: 'OnStar_' + filename
+                filename: 'OnStar_' + filename + '_'
             })
             try {
                 this.fileReader(file[0]).then(list => {
@@ -50,10 +53,8 @@ class Tool extends Component {
                     let eproofFlag = this.collectProoflist(list, 'eproof', iproofFlag[iproofFlag.length - 1])
                     this.infoFixer(list, iproofFlag, eproofFlag)
                     this.createProofList(list, iproofFlag, 'iprooflist')
-                    setTimeout(this.createProofList(list,eproofFlag,'eprooflist'),2000)
-                    console.log(iproofFlag, eproofFlag, list)
+                    setTimeout(this.createProofList(list, eproofFlag, 'eprooflist'), 2000)
                 })
-
             } catch (error) {
                 console.warn('excel file read err')
             }
@@ -64,6 +65,10 @@ class Tool extends Component {
         this.setState({
             bgcolor: '#e6a23c'
         })
+    }
+
+    componentDidMount(){
+        localStorage.setItem('autoRoute','/onstar');
     }
 
     fileReader(f) {
@@ -123,7 +128,7 @@ class Tool extends Component {
                 continue;
             if (list[i][0].toLowerCase().includes(type)) {
                 flag[0] = ++i;
-                this.deleteSpace(list[flag[0]])
+                this.deleteSpace(list[flag[0]], true)
                 flag[1] = this.formerProofInfoInList(list, flag[0]);
                 i = flag[1] + 1;
                 continue;
@@ -131,7 +136,7 @@ class Tool extends Component {
             if ((list[i][0].toLowerCase().includes('static')) &&
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[2] = ++i;
-                this.deleteSpace(list[flag[2]]);
+                this.deleteSpace(list[flag[2]], true);
                 flag[3] = this.formerProofInfoInList(list, flag[2]);
                 i = flag[3] + 1;
                 continue;
@@ -139,32 +144,43 @@ class Tool extends Component {
             if ((list[i][0].toLowerCase().includes('dynamic')) &&
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[4] = ++i;
-                this.deleteSpace(list[flag[4]]);
+                this.deleteSpace(list[flag[4]], true);
                 flag[5] = this.formerProofInfoInList(list, flag[4]);
                 return flag
             }
         }
     }
 
-    deleteSpace(list) {
-        while (list[list.length - 1].length < 2) {
-            list.pop();
+    deleteSpace(list, header) {
+        if (header) {
+            for (let i = 0; i < list.length - 1; i++) {
+                if (list[i] === undefined || list[i].toString().length < 2)
+                    list.splice(i, list.length - i + 1)
+            }
+        } else {
+            while (list[list.length - 1].toString().length < 2)
+                list.pop();
         }
     }
     //We choose some variable as key to define the length of information.
-    //Here are the three keys: EMAIL_ADDRESS, recip_type,CAMPAIGN_ID
+    //Here are the three keys: EMAIL_ADDRESS, recip_type,SPLIT_CODE
     formerProofInfoInList(list, index) {
         let key
         for (let i = 0; i < list[index].length; i++) {
+            if (list[index][i] === undefined)
+                continue;
             let tag = list[index][i].toLowerCase();
             if ((tag.includes('email') && tag.includes('address')) ||
                 (tag.includes('recip') && tag.includes('type')) ||
-                (tag.includes('campaign') && tag.includes('id')))
+                (tag.includes('split') && tag.includes('code'))) {
                 key = i
-        }
-        for (; index < list.length; index++) {
-            if (list[index][key] === undefined || list[index][key].length < 2)
-                return index - 1
+                for (; index < list.length; index++) {
+                    console.log(list[index][key])
+                    if (list[index][key] === undefined || list[index][key] === "" ||
+                        list[index][key].toString().length < 2)
+                        return index - 1
+                }
+            }
         }
     }
 
@@ -265,6 +281,13 @@ class Tool extends Component {
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
                     onMouseLeave={this.handleOnMouseLeave} >
+                </div>
+                <div className={styles.goback}>
+                    <Button onClick={()=>{ 
+                        localStorage.removeItem('autoRoute');
+                        router.push('/');}}>
+                        Go Back
+                    </Button>
                 </div>
             </div>
         )
