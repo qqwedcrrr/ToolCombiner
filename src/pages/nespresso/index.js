@@ -1,12 +1,96 @@
-import styles from './index.css';
+import styles from './index.less';
 import { Component } from 'react';
+import router from 'umi/router';
+import { Button } from 'antd'
 
-export default class NespressoTool extends Component{
-    render(){
-        return(
-            <div>
-                <p>heh</p>
+export default class NespressoTool extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            bgcolor: '#e6a23c'
+        }
+
+        this.handleDragLeave = this.handleDragLeave.bind(this);
+        this.handleDragOver = this.handleDragOver.bind(this);
+        this.handleDrop = this.handleDrop.bind(this);
+        this.handleOnMouseLeave = this.handleOnMouseLeave.bind(this)
+    }
+
+    handleOnMouseLeave(e) {
+        this.setState({
+            bgcolor: '#e6a23c'
+        })
+    }
+
+    handleDragLeave(e) {
+        setTimeout(() => {
+            this.setState({
+                bgcolor: '#e6a23c'
+            })
+        }, 2000)
+
+    }
+
+    handleDragOver(e) {
+        e.preventDefault()
+        this.setState({
+            bgcolor: '#409eff'
+        })
+    }
+
+    handleDrop(e) {
+        e.preventDefault();
+        this.setState({
+            bgcolor: '#67c23a'
+        })
+        let file = e.dataTransfer.files;
+        if (file.length < 1)
+            console.warn("file didn't upload correctly!")
+        else {
+            try {
+                this.fileReader(file[0]).then(list => {
+
+                })
+            } catch (error) {
+                console.warn('excel file read err')
+            }
+        }
+    }
+
+    render() {
+        return (
+            <div className={styles.container}>
+                <div className={styles.maincontainer}>
+                    <div className={styles.masking}
+                        style={{ background: this.state.bgcolor }}
+                        onDragOver={this.handleDragOver}
+                        onDragLeave={this.handleDragLeave}
+                        onDrop={this.handleDrop}
+                        onMouseLeave={this.handleOnMouseLeave}>
+                    </div>
+                    <div className={styles.hovertext}>
+                        <p className={styles.hovertext}>Please drag the CWS here!</p>
+                    </div>
+                    <div className={styles.codeinput}>
+                        <textarea placeholder="Place your code"></textarea>
+                    </div>
+                    <div className={styles.alias_link}>
+                        <ul>
+                            <li>asdad</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                <div className={styles.goback}>
+                    <Button onClick={() => {
+                        localStorage.removeItem('autoRoute');
+                        router.push('/');
+                    }}>
+                        Go Back
+                    </Button>
+                </div>
             </div>
+
         )
     }
 }

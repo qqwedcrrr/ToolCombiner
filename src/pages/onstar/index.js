@@ -1,8 +1,12 @@
 import styles from './index.css';
 import { Component } from 'react';
-import XLSX from 'xlsx';
+import {
+    fileReader, downLoadData,
+    infoFixer, deleteSpace,
+    dataPush, dataJoin
+} from './../../common/common'
 import router from 'umi/router';
-import {Button} from 'antd'
+import { Button } from 'antd'
 
 
 class Tool extends Component {
@@ -48,10 +52,10 @@ class Tool extends Component {
                 filename: 'OnStar_' + filename + '_'
             })
             try {
-                this.fileReader(file[0]).then(list => {
+                fileReader(file[0]).then(list => {
                     let iproofFlag = this.collectProoflist(list, 'iproof')
                     let eproofFlag = this.collectProoflist(list, 'eproof', iproofFlag[iproofFlag.length - 1])
-                    this.infoFixer(list, iproofFlag, eproofFlag)
+                    infoFixer(list, iproofFlag, eproofFlag)
                     this.createProofList(list, iproofFlag, 'iprooflist')
                     setTimeout(this.createProofList(list, eproofFlag, 'eprooflist'), 2000)
                 })
@@ -67,55 +71,10 @@ class Tool extends Component {
         })
     }
 
-    componentDidMount(){
-        localStorage.setItem('autoRoute','/onstar');
+    componentDidMount() {
+        localStorage.setItem('autoRoute', '/onstar');
     }
 
-    fileReader(f) {
-        let wb;
-        let rABS = true;
-        let _this = this
-        return new Promise((res, rej) => {
-            let reader = new FileReader();
-            reader.onload = e => {
-                let data = e.target.result;
-                if (rABS) {
-                    wb = XLSX.read(btoa(_this.dateFixer(data)), {
-                        type: 'base64'
-                    });
-                } else {
-                    wb = XLSX.read(data, {
-                        type: 'binary'
-                    });
-                }
-                let mainlist = _this.checkSheet(wb.Sheets)
-                let proofList = XLSX.utils.sheet_to_json(mainlist, { header: 1, raw: false });
-                res(proofList)
-            }
-            if (rABS) {
-                reader.readAsArrayBuffer(f);
-            } else {
-                reader.readAsBinaryString(f);
-                console.log('err')
-            }
-        })
-    }
-
-    dateFixer(data) {
-        let o = "",
-            l = 0,
-            w = 10240;
-        for (; l < data.byteLength / w; ++l) o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w, l * w + w)));
-        o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
-        return o;
-    }
-
-    checkSheet(sheet) {
-        for (let prop in sheet) {
-            if (prop.toLowerCase().indexOf('proof_seed') > -1)
-                return sheet[prop]
-        }
-    }
     //Accord to the type to generate the iproof list and eproof list
     collectProoflist(list, type, offset) {
         let flag = [];
@@ -128,7 +87,7 @@ class Tool extends Component {
                 continue;
             if (list[i][0].toLowerCase().includes(type)) {
                 flag[0] = ++i;
-                this.deleteSpace(list[flag[0]], true)
+                deleteSpace(list[flag[0]], true)
                 flag[1] = this.formerProofInfoInList(list, flag[0]);
                 i = flag[1] + 1;
                 continue;
@@ -136,7 +95,7 @@ class Tool extends Component {
             if ((list[i][0].toLowerCase().includes('static')) &&
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[2] = ++i;
-                this.deleteSpace(list[flag[2]], true);
+                deleteSpace(list[flag[2]], true);
                 flag[3] = this.formerProofInfoInList(list, flag[2]);
                 i = flag[3] + 1;
                 continue;
@@ -144,24 +103,13 @@ class Tool extends Component {
             if ((list[i][0].toLowerCase().includes('dynamic')) &&
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[4] = ++i;
-                this.deleteSpace(list[flag[4]], true);
+                deleteSpace(list[flag[4]], true);
                 flag[5] = this.formerProofInfoInList(list, flag[4]);
                 return flag
             }
         }
     }
 
-    deleteSpace(list, header) {
-        if (header) {
-            for (let i = 0; i < list.length - 1; i++) {
-                if (list[i] === undefined || list[i].toString().length < 2)
-                    list.splice(i, list.length - i + 1)
-            }
-        } else {
-            while (list[list.length - 1].toString().length < 2)
-                list.pop();
-        }
-    }
     //We choose some variable as key to define the length of information.
     //Here are the three keys: EMAIL_ADDRESS, recip_type,SPLIT_CODE
     formerProofInfoInList(list, index) {
@@ -175,7 +123,6 @@ class Tool extends Component {
                 (tag.includes('split') && tag.includes('code'))) {
                 key = i
                 for (; index < list.length; index++) {
-                    console.log(list[index][key])
                     if (list[index][key] === undefined || list[index][key] === "" ||
                         list[index][key].toString().length < 2)
                         return index - 1
@@ -184,90 +131,14 @@ class Tool extends Component {
         }
     }
 
-    infoFixer(list, iproofFlag, eproofFlag) {
-        this.lengthFixer(list, iproofFlag);
-        this.lengthFixer(list, eproofFlag);
-        for (var i = 0; i < eproofFlag[eproofFlag.length - 1] + 1; i++) {
-            for (var j = 0; j < list[i].length; j++) {
-                if (!list[i][j])
-                    list[i][j] = "";
-                // if(list[i][j].length<1)
-                //     list[i][j]
-                else
-                    list[i][j] = this.handleData(list[i][j])
-            }
-        }
-    }
-
-    lengthFixer(list, flag) {
-        for (let i = flag[0]; i < flag[flag.length - 1] + 1; i++) {
-            if (i > flag[0] && i <= flag[1]) {
-                list[i].length = list[flag[0]].length
-            }
-            if (i > flag[2] && i <= flag[3]) {
-                list[i].length = list[flag[2]].length
-            }
-            if (i > flag[4] && i <= flag[5]) {
-                list[i].length = list[flag[4]].length
-            }
-        }
-    }
-
-    handleData(value) {
-        let data = value.replace(/#|(><)/g, '')
-        data = data.replace(/\#/g, "")
-            .replace(/\t/g, ',')
-            .replace(/(^\s*)|(\s*$)/g, "")
-            .split('\n')
-        return data
-    }
-
-    dataPush(list, flag1, flag2) {
-        var newlist = [];
-        for (var i = flag1; i < flag2 + 1; i++) {
-            list[i] = list[i].join(',')
-            newlist.push(list[i]);
-        }
-        return newlist;
-    }
-
-    dataJoin(data1, data2, data3) {
-        let finalData = [];
-        let data = [];
-        let k = 1;
-        finalData[0] = data1[0];
-        finalData[0] = finalData[0].concat(',', data2[0], ',', data3[0], '\n');
-        for (let a = 1; a < data1.length; a++)
-            for (let b = 1; b < data2.length; b++)
-                for (let c = 1; c < data3.length; c++) {
-                    finalData[k] = data1[a];
-                    finalData[k] = finalData[k].concat(',', data2[b], ',', data3[c], '\n');
-                    k++;
-                }
-        data[0] = finalData[0]
-        for (let m = 0; m < finalData.length - 1; m++) {
-            data[0] = data[0].concat(finalData[m + 1]);
-        }
-        return data
-    }
-
     createProofList(list, flag, type) {
-        let data1 = this.dataPush(list, flag[0], flag[1]);
-        let data2 = this.dataPush(list, flag[2], flag[3])
-        let data3 = this.dataPush(list, flag[4], flag[5])
-        let data = this.dataJoin(data1, data2, data3)
-        this.downLoadData(this.state.filename + type, data)
+        let data1 = dataPush(list, flag[0], flag[1]);
+        let data2 = dataPush(list, flag[2], flag[3])
+        let data3 = dataPush(list, flag[4], flag[5])
+        let data = dataJoin(data1, data2, data3)
+        downLoadData(this.state.filename + type, data)
     }
 
-    downLoadData(filename, data) {
-        data = encodeURIComponent(data)
-        var downloadLink = document.createElement("a");
-        downloadLink.href = "data:text/csv;charset=utf-8," + data;
-        downloadLink.download = filename + ".csv";
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-    }
 
     render() {
         return (
@@ -283,9 +154,10 @@ class Tool extends Component {
                     onMouseLeave={this.handleOnMouseLeave} >
                 </div>
                 <div className={styles.goback}>
-                    <Button onClick={()=>{ 
+                    <Button onClick={() => {
                         localStorage.removeItem('autoRoute');
-                        router.push('/');}}>
+                        router.push('/');
+                    }}>
                         Go Back
                     </Button>
                 </div>
