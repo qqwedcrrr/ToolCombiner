@@ -17,6 +17,7 @@
   margin: 0 auto;
   position: relative;
   z-index: 2;
+  visibility: hidden;
 }
 .hovertext {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
@@ -57,4 +58,15 @@
   top: 20px;
   width: 300px;
   z-index: 1;
+}
+.buttoncontainer {
+  display: flex;
+  justify-content: flex-start;
+  align-items: baseline ;
+  flex: 1 1 auto;
+}
+.buttoncontainer p {
+  font-size: 16px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  padding: 2px 20px 0 20px;
 }

@@ -3,11 +3,22 @@ import { Component } from 'react';
 import router from 'umi/router';
 import { Button } from 'antd'
 
+let ButtonAlias = ({aliasName,aliasNumber}) => (
+    <div className={styles.buttoncontainer}>
+        <p>{aliasName}</p>
+        <Button>+</Button>
+        <Button>-</Button>
+        <p>{aliasNumber}</p>
+    </div>
+)
+
 export default class NespressoTool extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            bgcolor: '#e6a23c'
+            bgcolor: '#e6a23c',
+            aliasName:'null',
+            aliasNumber:'1'
         }
 
         this.handleDragLeave = this.handleDragLeave.bind(this);
@@ -76,7 +87,7 @@ export default class NespressoTool extends Component {
                     </div>
                     <div className={styles.alias_link}>
                         <ul>
-                            <li>asdad</li>
+                            <li><ButtonAlias aliasName={this.state.aliasName} aliasNumber={this.state.aliasNumber} /></li>
                         </ul>
                     </div>
                     
