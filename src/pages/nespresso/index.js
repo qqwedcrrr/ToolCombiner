@@ -3,12 +3,12 @@ import { Component } from 'react';
 import router from 'umi/router';
 import { Button } from 'antd'
 
-let ButtonAlias = ({aliasName,aliasNumber}) => (
+let ButtonAlias = ({aliasName,aliasNum}) => (
     <div className={styles.buttoncontainer}>
         <p>{aliasName}</p>
         <Button>+</Button>
         <Button>-</Button>
-        <p>{aliasNumber}</p>
+        <p>{aliasNum}</p>
     </div>
 )
 
@@ -87,7 +87,7 @@ export default class NespressoTool extends Component {
                     </div>
                     <div className={styles.alias_link}>
                         <ul>
-                            <li><ButtonAlias aliasName={this.state.aliasName} aliasNumber={this.state.aliasNumber} /></li>
+                            <li><ButtonAlias aliasName={this.state.aliasName} aliasNumber={this.state.aliasNum} /></li>
                         </ul>
                     </div>
                     

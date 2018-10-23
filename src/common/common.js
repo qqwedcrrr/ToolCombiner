@@ -1,4 +1,5 @@
 import XLSX from 'xlsx';
+import { supportsGoWithoutReloadUsingHash } from 'history/DOMUtils';
 
 export function fileReader(f) {
     let wb;
@@ -66,6 +67,20 @@ export function infoFixer(list, iproofFlag, eproofFlag) {
             else
                 list[i][j] = handleData(list[i][j])
         }
+    }
+    // duplicateNameCheck(list,iproofFlag);
+    // duplicateNameCheck(list,eproofFlag)
+}
+//The duplicate element usually is the emailaddress in Dynamic, so I start seek the duplicate element from Dynamic.
+export function duplicateNameCheck(list,flag){
+    let proofHeaderList = [];
+    proofHeaderList = proofHeaderList.concat(list[flag[0]],list[flag[2]],list[flag[4]]);
+    let newProofHeaderList = new Set(proofHeaderList);
+    console.log(newProofHeaderList,proofHeaderList)
+    if(Array.from(newProofHeaderList).length === proofHeaderList.length)
+        return list
+    else{
+        throw 'duplicate table tag'
     }
 }
 

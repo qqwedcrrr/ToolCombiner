@@ -60,6 +60,7 @@ class Tool extends Component {
                     setTimeout(this.createProofList(list, eproofFlag, 'eprooflist'), 2000)
                 })
             } catch (error) {
+                console.log(error)
                 console.warn('excel file read err')
             }
         }
@@ -88,7 +89,7 @@ class Tool extends Component {
             if (list[i][0].toLowerCase().includes(type)) {
                 flag[0] = ++i;
                 deleteSpace(list[flag[0]], true)
-                flag[1] = this.formerProofInfoInList(list, flag[0]);
+                flag[1] = this.formerProofInfoInList(list, flag[0], 1);
                 i = flag[1] + 1;
                 continue;
             }
@@ -96,7 +97,7 @@ class Tool extends Component {
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[2] = ++i;
                 deleteSpace(list[flag[2]], true);
-                flag[3] = this.formerProofInfoInList(list, flag[2]);
+                flag[3] = this.formerProofInfoInList(list, flag[2], 2);
                 i = flag[3] + 1;
                 continue;
             }
@@ -104,23 +105,42 @@ class Tool extends Component {
                 (list[i][0].toLowerCase().includes('attributes'))) {
                 flag[4] = ++i;
                 deleteSpace(list[flag[4]], true);
-                flag[5] = this.formerProofInfoInList(list, flag[4]);
+                flag[5] = this.formerProofInfoInList(list, flag[4], 3);
                 return flag
             }
         }
     }
 
     //We choose some variable as key to define the length of information.
-    //Here are the three keys: EMAIL_ADDRESS, recip_type,SPLIT_CODE
-    formerProofInfoInList(list, index) {
-        let key
+    //Here are the three keys: EMAIL_ADDRESS, recip_type,VEH_MAKE_DESC
+    formerProofInfoInList(list, index, num) {
+        let key,part
         for (let i = 0; i < list[index].length; i++) {
             if (list[index][i] === undefined)
                 continue;
             let tag = list[index][i].toLowerCase();
-            if ((tag.includes('email') && tag.includes('address')) ||
-                (tag.includes('recip') && tag.includes('type')) ||
-                (tag.includes('split') && tag.includes('code'))) {
+            switch (num) {
+                case 1:
+                    part = {
+                        one: 'email',
+                        two: 'address'
+                    }
+                    break;
+                case 2:
+                    part = {
+                        one: 'recip',
+                        two: 'type'
+                    }
+                    break;
+                case 3:
+                    part = {
+                        one: 'veh',
+                        two: 'make'
+                    }
+                    break;
+                default: console.warn('find proof flag err')
+            }
+            if (tag.includes(part.one) && tag.includes(part.two)) {
                 key = i
                 for (; index < list.length; index++) {
                     if (list[index][key] === undefined || list[index][key] === "" ||
@@ -143,10 +163,12 @@ class Tool extends Component {
     render() {
         return (
             <div className={styles.container}>
-                <div >
+                <div className={styles.topPadding}>
                     <p>Welcome to the onStar prooflist generator!</p>
                 </div>
-                <p className={styles.headerPad}>Please put the CWS here</p>
+                <p>Please put the CWS here</p>
+                <p className={styles.headerPad}>Please insure the these three key header <em>EMAIL_ADDRESS</em>, <em>recip_type</em>,<em>VEH_MAKE_DESC </em>
+                    table value length are longer than <span style={{ color: '#d32652' }}>TWO</span></p>
                 <div style={{ background: this.state.bgcolor }} className={styles.dragArea}
                     onDragOver={this.handleDragOver}
                     onDragLeave={this.handleDragLeave}
