@@ -17,7 +17,6 @@
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  visibility: hidden;
 }
 .hovertext {
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;

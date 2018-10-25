@@ -3,7 +3,8 @@ import { Component } from 'react';
 import {
     fileReader, downLoadData,
     infoFixer, deleteSpace,
-    dataPush, dataJoin
+    dataPush, dataJoin,
+    duplicateNameCheck, WarNoop
 } from './../../common/common'
 import router from 'umi/router';
 import { Button } from 'antd'
@@ -14,7 +15,8 @@ class Tool extends Component {
         super(props)
         this.state = {
             bgcolor: '#e6a23c',
-            filename: ''
+            filename: '',
+            error: ''
         }
         this.handleDragLeave = this.handleDragLeave.bind(this);
         this.handleDragOver = this.handleDragOver.bind(this);
@@ -51,18 +53,26 @@ class Tool extends Component {
             this.setState({
                 filename: 'OnStar_' + filename + '_'
             })
-            try {
-                fileReader(file[0]).then(list => {
-                    let iproofFlag = this.collectProoflist(list, 'iproof')
-                    let eproofFlag = this.collectProoflist(list, 'eproof', iproofFlag[iproofFlag.length - 1])
-                    infoFixer(list, iproofFlag, eproofFlag)
+            fileReader(file[0]).then(list => {
+                let iproofFlag = this.collectProoflist(list, 'iproof')
+                let eproofFlag = this.collectProoflist(list, 'eproof', iproofFlag[iproofFlag.length - 1])
+                infoFixer(list, iproofFlag, eproofFlag)
+                try {
+                    let errorlist = duplicateNameCheck(list, iproofFlag)
+                    if (errorlist.length > 0) {
+                        throw errorlist
+                    }
+                } catch (errorlist) {
+                    this.setState({
+                        error: errorlist
+                    })
+                    console.warn(errorlist)
+                } finally {
                     this.createProofList(list, iproofFlag, 'iprooflist')
                     setTimeout(this.createProofList(list, eproofFlag, 'eprooflist'), 2000)
-                })
-            } catch (error) {
-                console.log(error)
-                console.warn('excel file read err')
-            }
+                }
+
+            })
         }
     }
 
@@ -114,11 +124,12 @@ class Tool extends Component {
     //We choose some variable as key to define the length of information.
     //Here are the three keys: EMAIL_ADDRESS, recip_type,VEH_MAKE_DESC
     formerProofInfoInList(list, index, num) {
-        let key,part
+        let key, part, tag;
+        let checklist = []
         for (let i = 0; i < list[index].length; i++) {
             if (list[index][i] === undefined)
                 continue;
-            let tag = list[index][i].toLowerCase();
+            tag = list[index][i].toLowerCase();
             switch (num) {
                 case 1:
                     part = {
@@ -159,7 +170,6 @@ class Tool extends Component {
         downLoadData(this.state.filename + type, data)
     }
 
-
     render() {
         return (
             <div className={styles.container}>
@@ -167,8 +177,9 @@ class Tool extends Component {
                     <p>Welcome to the onStar prooflist generator!</p>
                 </div>
                 <p>Please put the CWS here</p>
-                <p className={styles.headerPad}>Please insure the these three key header <em>EMAIL_ADDRESS</em>, <em>recip_type</em>,<em>VEH_MAKE_DESC </em>
+                <p>Please insure the these three key header <em>EMAIL_ADDRESS</em>, <em>recip_type</em>,<em>VEH_MAKE_DESC </em>
                     table value length are longer than <span style={{ color: '#d32652' }}>TWO</span></p>
+                <WarNoop errlist={this.state.error} />
                 <div style={{ background: this.state.bgcolor }} className={styles.dragArea}
                     onDragOver={this.handleDragOver}
                     onDragLeave={this.handleDragLeave}

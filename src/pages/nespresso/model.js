@@ -11,14 +11,20 @@ export default {
         ]
     },
     reducers:{
-        'reduceNum'(state,{payload:id}){
+        reduceNum(state,{payload:id}){
             return state.alias.filter(data =>data.id !== id)
         },
-        'addNum'(state,{payload:id}){
+        addNum(state,{payload:id}){
             return state.alias.find(data =>{data.id ===id}).num+1
         },
-        'addAlias'(state,{payload:alias}){
+        addAlias(state,{payload:alias}){
             return state.alias.push(alias)
+        },
+        changeColor(state,{payload:color}){
+            return{
+                ...state,
+                bgcolor:color
+            }
         }
     }
 }

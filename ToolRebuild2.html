@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,37 +8,41 @@
 	<script crossorigin src="https://unpkg.com/react@16/umd/react.development.js"></script>
 	<script crossorigin src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"></script>
 	<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
-	<script src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script> 
-	
+	<script src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script>
+
 	<!--<script src="src/babel.min.js"></script>
 	<script src="src/xlsx.full.min.js"></script>-->
 	<style type="text/css">
-		.container{
+		.container {
 			width: 1200px;
 			margin: 0 auto;
 		}
-		.headerPad{
-			margin-top:80px;
-		}
-		.dragArea{
-			bgcolor:#93ead2;
-			width:400px;
-		  	height:400px;
-		  	border:1px solid #000001;
-		}
-		.ckeckBoxR{
-			width:20px;
-			height:20px;
-		}
-		p{	
-			font-size:20px;
-			font-weight:bold;
-			margin-bottom:0;
-			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+
+		.headerPad {
+			margin-top: 80px;
 		}
 
-	</style> 
+		.dragArea {
+			bgcolor: #93ead2;
+			width: 400px;
+			height: 400px;
+			border: 1px solid #000001;
+		}
+
+		.ckeckBoxR {
+			width: 20px;
+			height: 20px;
+		}
+
+		p {
+			font-size: 20px;
+			font-weight: bold;
+			margin-bottom: 0;
+			font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+		}
+	</style>
 </head>
+
 <body>
 	<section class="container">
 		<div id="root"></div>
@@ -410,7 +415,6 @@
 		  render() {
 		    return (
 		    	<div className="container headerPad">
-			        
 					<div  className="col-sm-6">
 						<div className = "row" >
 							<div>
@@ -428,14 +432,13 @@
 		    );
 		  }
 		}
-
 		ReactDOM.render(
 				  <Tool />,
 				  document.getElementById('root')
 				);
 
 	</script>
-	
+
 </body>
 
 </html>

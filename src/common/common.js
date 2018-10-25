@@ -1,5 +1,5 @@
 import XLSX from 'xlsx';
-import { supportsGoWithoutReloadUsingHash } from 'history/DOMUtils';
+import { func } from 'prop-types';
 
 export function fileReader(f) {
     let wb;
@@ -52,7 +52,7 @@ export function handleData(value) {
         .replace(/\t/g, ',')
         .replace(/(^\s*)|(\s*$)/g, "")
         .split('\n')
-    return data
+    return data.toString()
 }
 
 export function infoFixer(list, iproofFlag, eproofFlag) {
@@ -62,26 +62,27 @@ export function infoFixer(list, iproofFlag, eproofFlag) {
         for (var j = 0; j < list[i].length; j++) {
             if (!list[i][j])
                 list[i][j] = "";
-            // if(list[i][j].length<1)
-            //     list[i][j]
             else
                 list[i][j] = handleData(list[i][j])
         }
     }
-    // duplicateNameCheck(list,iproofFlag);
-    // duplicateNameCheck(list,eproofFlag)
 }
+
 //The duplicate element usually is the emailaddress in Dynamic, so I start seek the duplicate element from Dynamic.
-export function duplicateNameCheck(list,flag){
-    let proofHeaderList = [];
-    proofHeaderList = proofHeaderList.concat(list[flag[0]],list[flag[2]],list[flag[4]]);
-    let newProofHeaderList = new Set(proofHeaderList);
-    console.log(newProofHeaderList,proofHeaderList)
-    if(Array.from(newProofHeaderList).length === proofHeaderList.length)
-        return list
-    else{
-        throw 'duplicate table tag'
+export function duplicateNameCheck(list, flag) {
+    let checklist = [];
+    let errorList = [];
+    flag = [flag[0], flag[2], flag[4]]
+    for (let i = 0; i < flag.length; i++) {
+        for (let j = 0; j < list[flag[i]].length; j++) {
+            if (!checklist.includes(list[flag[i]][j]))
+                checklist.push(list[flag[i]][j])
+            else
+                errorList.push(list[flag[i]][j])
+        }
     }
+    if (errorList.length > 0)
+        return errorList
 }
 
 export function deleteSpace(list, header) {
@@ -108,6 +109,18 @@ export function lengthFixer(list, flag) {
             list[i].length = list[flag[4]].length
         }
     }
+}
+
+export const WarNoop = ({ errlist }) => {
+    if (Array.isArray(errlist) && errlist.length > 0) {
+        errlist = errlist.join(';')
+        return (
+            <p style={{ color: '#595959' }}><span style={{ color: '#DD4A68' }}>{errlist}</span> these are duplicate table cell name</p>
+        )
+    }else
+        return (
+            <span></span>
+        )
 }
 
 export function dataJoin(data1, data2, data3) {

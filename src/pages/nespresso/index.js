@@ -1,9 +1,9 @@
 import styles from './index.less';
-import { Component } from 'react';
 import router from 'umi/router';
-import { Button } from 'antd'
+import { Button } from 'antd';
+import { connect } from 'dva';
 
-let ButtonAlias = ({aliasName,aliasNum}) => (
+let ButtonAlias = ({ aliasName, aliasNum }) => (
     <div className={styles.buttoncontainer}>
         <p>{aliasName}</p>
         <Button>+</Button>
@@ -12,47 +12,36 @@ let ButtonAlias = ({aliasName,aliasNum}) => (
     </div>
 )
 
-export default class NespressoTool extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            bgcolor: '#e6a23c',
-            aliasName:'null',
-            aliasNumber:'1'
-        }
-
-        this.handleDragLeave = this.handleDragLeave.bind(this);
-        this.handleDragOver = this.handleDragOver.bind(this);
-        this.handleDrop = this.handleDrop.bind(this);
-        this.handleOnMouseLeave = this.handleOnMouseLeave.bind(this)
-    }
-
-    handleOnMouseLeave(e) {
-        this.setState({
-            bgcolor: '#e6a23c'
+ const NespressoTool = ({ dispatch, nespresso }) => {
+    function handleOnMouseLeave() {
+        dispatch({
+            type: 'nespresso/changeColor',
+            payload: '#e6a23c'
         })
     }
 
-    handleDragLeave(e) {
+    function handleDragLeave() {
         setTimeout(() => {
-            this.setState({
-                bgcolor: '#e6a23c'
+            dispatch({
+                type: 'nespresso/changeColor',
+                payload: '#e6a23c'
             })
-        }, 2000)
-
+        }, 300)
     }
 
-    handleDragOver(e) {
+    function handleDragOver(e) {
         e.preventDefault()
-        this.setState({
-            bgcolor: '#409eff'
+        dispatch({
+            type: 'nespresso/changeColor',
+            payload: '#409eff'
         })
     }
 
-    handleDrop(e) {
+    function handleDrop(e) {
         e.preventDefault();
-        this.setState({
-            bgcolor: '#67c23a'
+        dispatch({
+            type: 'nespresso/changeColor',
+            payload: '#67c23a'
         })
         let file = e.dataTransfer.files;
         if (file.length < 1)
@@ -67,44 +56,43 @@ export default class NespressoTool extends Component {
             }
         }
     }
-
-    render() {
-        return (
-            <div className={styles.container}>
-                <div className={styles.maincontainer}>
-                    <div className={styles.masking}
-                        style={{ background: this.state.bgcolor }}
-                        onDragOver={this.handleDragOver}
-                        onDragLeave={this.handleDragLeave}
-                        onDrop={this.handleDrop}
-                        onMouseLeave={this.handleOnMouseLeave}>
-                    </div>
-                    <div className={styles.hovertext}>
-                        <p className={styles.hovertext}>Please drag the CWS here!</p>
-                    </div>
-                    <div className={styles.codeinput}>
-                        <textarea placeholder="Place your code"></textarea>
-                    </div>
-                    <div className={styles.alias_link}>
-                        <ul>
-                            <li><ButtonAlias aliasName={this.state.aliasName} aliasNumber={this.state.aliasNum} /></li>
-                        </ul>
-                    </div>
-                    
+    return (
+        <div className={styles.container}>
+            <div className={styles.maincontainer}>
+                <div className={styles.masking}
+                    style={{ background: nespresso.bgcolor }}
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onMouseLeave={handleOnMouseLeave}>
                 </div>
-                <div className={styles.goback}>
-                    <Button onClick={() => {
-                        localStorage.removeItem('autoRoute');
-                        router.push('/');
-                    }}>
-                        Go Back
-                    </Button>
+                <div className={styles.hovertext}>
+                    <p className={styles.hovertext}>Please drag the CWS here!</p>
+                </div>
+                <div className={styles.codeinput}>
+                    <textarea placeholder="Place your code"></textarea>
+                </div>
+                <div className={styles.alias_link}>
+                    <ul>
+                        <li><ButtonAlias aliasName={nespresso.aliasName} aliasNumber={nespresso.aliasNum} /></li>
+                    </ul>
                 </div>
             </div>
-
-        )
-    }
+            <div className={styles.goback}>
+                <Button onClick={() => {
+                    localStorage.removeItem('autoRoute');
+                    router.push('/');
+                }}>
+                    Go Back
+                    </Button>
+            </div>
+        </div>
+    )
 }
+
+export default connect(({nespresso}) =>({nespresso}))(NespressoTool)
+
+
 
 // <!DOCTYPE html>
 // <html lang="en">
