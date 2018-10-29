@@ -53,7 +53,7 @@ class Tool extends Component {
             this.setState({
                 filename: 'OnStar_' + filename + '_'
             })
-            fileReader(file[0]).then(list => {
+            fileReader(file[0],'onstar').then(list => {
                 let iproofFlag = this.collectProoflist(list, 'iproof')
                 let eproofFlag = this.collectProoflist(list, 'eproof', iproofFlag[iproofFlag.length - 1])
                 infoFixer(list, iproofFlag, eproofFlag)

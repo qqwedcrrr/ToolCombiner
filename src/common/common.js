@@ -1,7 +1,7 @@
 import XLSX from 'xlsx';
 import { func } from 'prop-types';
 
-export function fileReader(f) {
+export function fileReader(f, brand) {
     let wb;
     let rABS = true;
     return new Promise((res, rej) => {
@@ -17,7 +17,13 @@ export function fileReader(f) {
                     type: 'binary'
                 });
             }
-            let mainlist = onstarCheckSheet(wb.Sheets)
+            let mainlist
+            if (brand === 'onstar')
+                mainlist = onstarCheckSheet(wb.Sheets)
+            if (brand === 'nespresso')
+                mainlist = nespressoCheckSheet(wb.Sheets)
+            else
+                res(wb.Sheets)
             let proofList = XLSX.utils.sheet_to_json(mainlist, { header: 1, raw: false });
             res(proofList)
         }
@@ -33,6 +39,13 @@ export function fileReader(f) {
 export function onstarCheckSheet(sheet) {
     for (let prop in sheet) {
         if (prop.toLowerCase().indexOf('proof_seed') > -1)
+            return sheet[prop]
+    }
+}
+
+export function nespressoCheckSheet(sheet) {
+    for (let prop in sheet) {
+        if (prop.toLowerCase().indexOf('et') > -1 && prop.toLowerCase().indexOf('url') > -1)
             return sheet[prop]
     }
 }
@@ -56,9 +69,24 @@ export function handleData(value) {
 }
 
 export function infoFixer(list, iproofFlag, eproofFlag) {
-    lengthFixer(list, iproofFlag);
-    lengthFixer(list, eproofFlag);
-    for (var i = 0; i < eproofFlag[eproofFlag.length - 1] + 1; i++) {
+    let length, clear;
+    let deletBox = []
+    if (iproofFlag)
+        lengthFixer(list, iproofFlag);
+    if (eproofFlag) {
+        lengthFixer(list, eproofFlag);
+        length = eproofFlag[eproofFlag.length - 1] + 1
+    }
+    else {
+        length = list.length;
+        clear = true
+    }
+    for (let i = 0; i < length; i++) {
+        if (clear) {
+            if (list[i] !== undefined && list[i].toString().length < 2) {
+                deletBox.push(i)
+            }
+        }
         for (var j = 0; j < list[i].length; j++) {
             if (!list[i][j])
                 list[i][j] = "";
@@ -66,6 +94,8 @@ export function infoFixer(list, iproofFlag, eproofFlag) {
                 list[i][j] = handleData(list[i][j])
         }
     }
+    for (let i = deletBox.length - 1; i >= 0; i--)
+        list.splice(deletBox[i], 1)
 }
 
 //The duplicate element usually is the emailaddress in Dynamic, so I start seek the duplicate element from Dynamic.
@@ -88,7 +118,7 @@ export function duplicateNameCheck(list, flag) {
 export function deleteSpace(list, header) {
     if (header) {
         for (let i = 0; i < list.length - 1; i++) {
-            if (list[i] === undefined || list[i].toString().length < 2)
+            if (list[i] === undefined || list[i].toString().replace(/ /g, '').length < 1)
                 list.splice(i, list.length - i + 1)
         }
     } else {
@@ -117,7 +147,7 @@ export const WarNoop = ({ errlist }) => {
         return (
             <p style={{ color: '#595959' }}><span style={{ color: '#DD4A68' }}>{errlist}</span> these are duplicate table cell name</p>
         )
-    }else
+    } else
         return (
             <span></span>
         )

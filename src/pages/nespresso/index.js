@@ -2,17 +2,30 @@ import styles from './index.less';
 import router from 'umi/router';
 import { Button } from 'antd';
 import { connect } from 'dva';
+import {
+    fileReader,
+    infoFixer, deleteSpace,
+    dataPush, dataJoin,
+    duplicateNameCheck, WarNoop
+} from './../../common/common'
 
-let ButtonAlias = ({ aliasName, aliasNum }) => (
-    <div className={styles.buttoncontainer}>
-        <p>{aliasName}</p>
-        <Button>+</Button>
-        <Button>-</Button>
-        <p>{aliasNum}</p>
-    </div>
-)
 
- const NespressoTool = ({ dispatch, nespresso }) => {
+let ButtonAlias = ({ alias, dispatch }) => {
+    return (
+        <div className={styles.buttoncontainer}>
+            <p>{alias.name}</p>
+            <Button onClick={() => {
+                dispatch({ type: 'nespresso/addNum', payload: alias.id })
+            }}>+</Button>
+            <Button onClick={() => {
+                dispatch({ type: 'nespresso/reduceNum', payload: alias.id })
+            }}>-</Button>
+            <p>{alias.num}</p>
+        </div>
+    )
+}
+
+const NespressoTool = ({ dispatch, nespresso }) => {
     function handleOnMouseLeave() {
         dispatch({
             type: 'nespresso/changeColor',
@@ -48,14 +61,38 @@ let ButtonAlias = ({ aliasName, aliasNum }) => (
             console.warn("file didn't upload correctly!")
         else {
             try {
-                this.fileReader(file[0]).then(list => {
-
+                fileReader(file[0], 'nespresso').then(list => {
+                    let mainInfo = collectInfolist(list)
+                    console.log(mainInfo)
                 })
             } catch (error) {
                 console.warn('excel file read err')
             }
         }
     }
+
+    function collectInfolist(list) {
+        let mainInfo = [];
+        let info;
+        for (let i = 0; i < list.length; i++) {
+            if (list[i][0] === undefined)
+                continue;
+            if ((list[i][0].toLowerCase().includes('link')) &&
+                (list[i][0].toLowerCase().includes('instruction'))) {
+                i += 1;
+                for (; i < list.length ; i++) {
+                    infoFixer(list)
+                    info = {
+                        aliasName: list[i][1],
+                        link: list[i][5]
+                    }
+                    mainInfo.push(info)
+                }
+            }
+        }
+        return mainInfo
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.maincontainer}>
@@ -74,7 +111,11 @@ let ButtonAlias = ({ aliasName, aliasNum }) => (
                 </div>
                 <div className={styles.alias_link}>
                     <ul>
-                        <li><ButtonAlias aliasName={nespresso.aliasName} aliasNumber={nespresso.aliasNum} /></li>
+                        {
+                            nespresso.alias.map((data, index) => (
+                                <li><ButtonAlias key={data.id} dispatch={dispatch} alias={data} /></li>
+                            ))
+                        }
                     </ul>
                 </div>
             </div>
@@ -90,7 +131,7 @@ let ButtonAlias = ({ aliasName, aliasNum }) => (
     )
 }
 
-export default connect(({nespresso}) =>({nespresso}))(NespressoTool)
+export default connect(({ nespresso }) => ({ nespresso }))(NespressoTool)
 
 
 
