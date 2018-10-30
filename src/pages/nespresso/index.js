@@ -4,7 +4,7 @@ import { Button } from 'antd';
 import { connect } from 'dva';
 import {
     fileReader,
-    infoFixer, deleteSpace,
+    infoFixer, phonecallFixer,
     dataPush, dataJoin,
     duplicateNameCheck, WarNoop
 } from './../../common/common'
@@ -12,20 +12,25 @@ import {
 
 let ButtonAlias = ({ alias, dispatch }) => {
     return (
-        <div className={styles.buttoncontainer}>
-            <p>{alias.name}</p>
-            <Button onClick={() => {
-                dispatch({ type: 'nespresso/addNum', payload: alias.id })
-            }}>+</Button>
-            <Button onClick={() => {
-                dispatch({ type: 'nespresso/reduceNum', payload: alias.id })
-            }}>-</Button>
-            <p>{alias.num}</p>
+        <div>
+            <div className={styles.buttoncontainer}>
+                <p className={styles.aliasname}>{alias.aliasName}</p>
+                <Button style={{ float: 'left' }} onClick={() => {
+                    dispatch({ type: 'nespresso/addNum', payload: alias.id })
+                }}>+</Button>
+                <Button style={{ float: 'left' }} onClick={() => {
+                    dispatch({ type: 'nespresso/reduceNum', payload: alias.id })
+                }}>-</Button>
+                <p>{alias.num}</p>
+                <p className={styles.aliaslink}>{alias.link}</p>
+            </div>
         </div>
     )
 }
 
 const NespressoTool = ({ dispatch, nespresso }) => {
+    let code
+
     function handleOnMouseLeave() {
         dispatch({
             type: 'nespresso/changeColor',
@@ -63,6 +68,9 @@ const NespressoTool = ({ dispatch, nespresso }) => {
             try {
                 fileReader(file[0], 'nespresso').then(list => {
                     let mainInfo = collectInfolist(list)
+                    dispatch({ type: 'nespresso/setAlias', payload: mainInfo })
+                    dispatch({ type: 'nespresso/maskRemove' })
+
                     console.log(mainInfo)
                 })
             } catch (error) {
@@ -80,11 +88,18 @@ const NespressoTool = ({ dispatch, nespresso }) => {
             if ((list[i][0].toLowerCase().includes('link')) &&
                 (list[i][0].toLowerCase().includes('instruction'))) {
                 i += 1;
-                for (; i < list.length ; i++) {
-                    infoFixer(list)
+                console.log(list.length)
+                infoFixer(list)
+                console.log(list)
+                for (let id = 0; i < list.length; i++) {    
+                    if ((list[i][5].toLowerCase().includes('click')) &&
+                        (list[i][5].toLowerCase().includes('call')))
+                        list[i][5] = 'tell:' + phonecallFixer(list[i][5])
                     info = {
                         aliasName: list[i][1],
-                        link: list[i][5]
+                        id: id++,
+                        num: id > 6 && id < list.length - 14 ? 1 : 0,
+                        link: list[i][5],
                     }
                     mainInfo.push(info)
                 }
@@ -93,26 +108,50 @@ const NespressoTool = ({ dispatch, nespresso }) => {
         return mainInfo
     }
 
+    function onTransferClick() {
+        let alias = nespresso.alias
+        for(let i = 0 ; i<alias.length; i++){
+            if(alias[i].num === 1){
+                code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName)
+            }if(alias[i].num >1){
+                for(let num = 1;num<alias[i].num+1;num++){
+                    code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName+"_"+num)     
+                }
+            }
+            if(alias[i].link.toLowerCase().includes('tell:')){
+                code.value = code.value.replace(/(href=").*?\?_*(URL_REPLACE).*?"/,'href="'+alias[i].link+'"')
+            }else{
+                code.value = code.value.replace("____URL_REPLACE____",alias[i].link)
+            }
+        }
+    }
+
+    function linkReplace(string,value){
+
+    }
+
     return (
         <div className={styles.container}>
             <div className={styles.maincontainer}>
                 <div className={styles.masking}
-                    style={{ background: nespresso.bgcolor }}
+                    style={{ background: nespresso.bgcolor, visibility: nespresso.cover ? 'visible' : 'hidden' }}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
                     onDrop={handleDrop}
                     onMouseLeave={handleOnMouseLeave}>
                 </div>
-                <div className={styles.hovertext}>
+                <div className={styles.hovertext}
+                    style={{ visibility: nespresso.cover ? 'visible' : 'hidden' }}>
                     <p className={styles.hovertext}>Please drag the CWS here!</p>
                 </div>
                 <div className={styles.codeinput}>
-                    <textarea placeholder="Place your code"></textarea>
+                    <textarea ref={(node) => code = node} placeholder="Place your code"></textarea>
+                    <Button onClick={onTransferClick}>Click to transfer</Button>
                 </div>
-                <div className={styles.alias_link}>
+                <div className={styles.aliascontainer}>
                     <ul>
                         {
-                            nespresso.alias.map((data, index) => (
+                            nespresso.alias.map(data => (
                                 <li><ButtonAlias key={data.id} dispatch={dispatch} alias={data} /></li>
                             ))
                         }

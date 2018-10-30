@@ -2,11 +2,13 @@ export default {
     namespace: 'nespresso',
     state: {
         bgcolor: '#e6a23c',
+        cover: true,
         alias: [
             {
-                name: 'null',
+                aliasName: 'null',
                 id: 0,
-                num: 1
+                num: 1,
+                link:'null'
             }
         ]
     },
@@ -14,13 +16,15 @@ export default {
         reduceNum(state, { payload: id }) {
             let alias = state.alias.find(data => data.id === id);
             let index = state.alias.indexOf(alias)
+            let newAlias = state.alias.slice()
+            newAlias.splice(index, 1, alias)
             if (alias.num === 0)
                 return state
             else {
                 alias.num -= 1
                 return {
                     ...state,
-                    alias: state.alias.splice(index, 1, alias)
+                    alias:newAlias
                 }
             }
         },
@@ -28,21 +32,28 @@ export default {
             let alias = state.alias.find(data => data.id === id);
             let index = state.alias.indexOf(alias)
             alias.num += 1
+            let newAlias = state.alias.slice()
             return {
                 ...state,
-                alias: state.alias.splice(index, 1, alias)
+                alias:newAlias
             }
         },
-        addAlias(state, { payload: alias }) {
+        setAlias(state, { payload: alias }) {
             return {
                 ...state,
-                alias: state.alias.push(alias)
+                alias: alias
             }
         },
         changeColor(state, { payload: color }) {
             return {
                 ...state,
                 bgcolor: color
+            }
+        },
+        maskRemove(state){
+            return{
+                ...state,
+                cover: !state.cover
             }
         }
     }

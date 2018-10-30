@@ -115,6 +115,10 @@ export function duplicateNameCheck(list, flag) {
         return errorList
 }
 
+export function phonecallFixer(string){
+    return string.match(/[0-9]/g).join().replace(/,/g,'')
+}
+
 export function deleteSpace(list, header) {
     if (header) {
         for (let i = 0; i < list.length - 1; i++) {
