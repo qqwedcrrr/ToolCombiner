@@ -82,10 +82,6 @@ class Tool extends Component {
         })
     }
 
-    componentDidMount() {
-        localStorage.setItem('autoRoute', '/onstar');
-    }
-
     //Accord to the type to generate the iproof list and eproof list
     collectProoflist(list, type, offset) {
         let flag = [];

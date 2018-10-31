@@ -67,11 +67,10 @@ const NespressoTool = ({ dispatch, nespresso }) => {
         else {
             try {
                 fileReader(file[0], 'nespresso').then(list => {
+                    infoFixer(list)
                     let mainInfo = collectInfolist(list)
                     dispatch({ type: 'nespresso/setAlias', payload: mainInfo })
                     dispatch({ type: 'nespresso/maskRemove' })
-
-                    console.log(mainInfo)
                 })
             } catch (error) {
                 console.warn('excel file read err')
@@ -88,9 +87,6 @@ const NespressoTool = ({ dispatch, nespresso }) => {
             if ((list[i][0].toLowerCase().includes('link')) &&
                 (list[i][0].toLowerCase().includes('instruction'))) {
                 i += 1;
-                console.log(list.length)
-                infoFixer(list)
-                console.log(list)
                 for (let id = 0; i < list.length; i++) {    
                     if ((list[i][5].toLowerCase().includes('click')) &&
                         (list[i][5].toLowerCase().includes('call')))
@@ -111,23 +107,22 @@ const NespressoTool = ({ dispatch, nespresso }) => {
     function onTransferClick() {
         let alias = nespresso.alias
         for(let i = 0 ; i<alias.length; i++){
-            if(alias[i].num === 1){
-                code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName)
-            }if(alias[i].num >1){
-                for(let num = 1;num<alias[i].num+1;num++){
-                    code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName+"_"+num)     
+            if(alias[i].num){
+                if(alias[i].num === 1){
+                    code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName)
+                }if(alias[i].num >1){
+                    for(let num = 1;num<alias[i].num+1;num++){
+                        code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName+"_"+num)     
+                    }
+                }
+                console.log(alias[i].aliasName,alias[i].link)
+                if(alias[i].link.toLowerCase().includes('tell:')){
+                    code.value = code.value.replace(/(href=").*?\?_*(URL_REPLACE).*?"/,'href="'+alias[i].link+'"')
+                }else{
+                    code.value = code.value.replace("____URL_REPLACE____",alias[i].link)
                 }
             }
-            if(alias[i].link.toLowerCase().includes('tell:')){
-                code.value = code.value.replace(/(href=").*?\?_*(URL_REPLACE).*?"/,'href="'+alias[i].link+'"')
-            }else{
-                code.value = code.value.replace("____URL_REPLACE____",alias[i].link)
-            }
         }
-    }
-
-    function linkReplace(string,value){
-
     }
 
     return (

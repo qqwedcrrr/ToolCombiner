@@ -13,8 +13,8 @@ export default function() {
       <p>To get started, choose a tool to go!</p>
       <div className={styles.linkcontainer}>
         <ul className={styles.list}>
-          <li><Button onClick={()=>{router.push('/nespresso')}} className={styles.gotolink}>Go to Nespresso Tool</Button></li>
-          <li><Button onClick={()=>{router.push('/onstar')}} className={styles.gotolink}>Go to OnStar Tool</Button></li>
+          <li><Button onClick={()=>{router.push('/nespresso');localStorage.setItem('autoRoute', '/nespresso');}} className={styles.gotolink}>Go to Nespresso Tool</Button></li>
+          <li><Button onClick={()=>{router.push('/onstar');localStorage.setItem('autoRoute', '/onstar');}} className={styles.gotolink}>Go to OnStar Tool</Button></li>
         </ul>
       </div>
     </div>

@@ -16,7 +16,7 @@ export default {
       hardSource: false,
     }],
   ],
-  // 'externals':{
-  //   'xlsx':'XLSX'
-  // }
+  'externals':{
+    'xlsx':'XLSX'
+  }
 }

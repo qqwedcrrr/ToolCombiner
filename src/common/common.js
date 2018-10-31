@@ -3,6 +3,7 @@ import { func } from 'prop-types';
 
 export function fileReader(f, brand) {
     let wb;
+    let mainlist;
     let rABS = true;
     return new Promise((res, rej) => {
         let reader = new FileReader();
@@ -17,10 +18,9 @@ export function fileReader(f, brand) {
                     type: 'binary'
                 });
             }
-            let mainlist
             if (brand === 'onstar')
                 mainlist = onstarCheckSheet(wb.Sheets)
-            if (brand === 'nespresso')
+            else if (brand === 'nespresso')
                 mainlist = nespressoCheckSheet(wb.Sheets)
             else
                 res(wb.Sheets)
@@ -38,14 +38,14 @@ export function fileReader(f, brand) {
 
 export function onstarCheckSheet(sheet) {
     for (let prop in sheet) {
-        if (prop.toLowerCase().indexOf('proof_seed') > -1)
+        if (prop.toLowerCase().includes('proof') && prop.toLowerCase().includes('seed') )
             return sheet[prop]
     }
 }
 
 export function nespressoCheckSheet(sheet) {
     for (let prop in sheet) {
-        if (prop.toLowerCase().indexOf('et') > -1 && prop.toLowerCase().indexOf('url') > -1)
+        if (prop.toLowerCase().includes('et') && prop.toLowerCase().includes('url'))
             return sheet[prop]
     }
 }
