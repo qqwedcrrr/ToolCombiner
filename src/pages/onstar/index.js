@@ -172,7 +172,6 @@ class Tool extends Component {
                 <div className={styles.topPadding}>
                     <p>Welcome to the onStar prooflist generator!</p>
                 </div>
-                <p>Please put the CWS here</p>
                 <p>Please insure the these three key header <em>EMAIL_ADDRESS</em>, <em>recip_type</em>,<em>VEH_MAKE_DESC </em>
                     table value length are longer than <span style={{ color: '#d32652' }}>TWO</span></p>
                 <WarNoop errlist={this.state.error} />
@@ -181,6 +180,7 @@ class Tool extends Component {
                     onDragLeave={this.handleDragLeave}
                     onDrop={this.handleDrop}
                     onMouseLeave={this.handleOnMouseLeave} >
+                    <p className={styles.hovertext} onDrop={this.handleDrop}>Please put the CWS here</p>
                 </div>
                 <div className={styles.goback}>
                     <Button onClick={() => {

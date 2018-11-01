@@ -147,7 +147,7 @@ export function lengthFixer(list, flag) {
 
 export const WarNoop = ({ errlist }) => {
     if (Array.isArray(errlist) && errlist.length > 0) {
-        errlist = errlist.join(';')
+        errlist = errlist.join('\n\/\n')
         return (
             <p style={{ color: '#595959' }}><span style={{ color: '#DD4A68' }}>{errlist}</span> these are duplicate table cell name</p>
         )

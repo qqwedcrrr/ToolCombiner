@@ -5,8 +5,6 @@ import { connect } from 'dva';
 import {
     fileReader,
     infoFixer, phonecallFixer,
-    dataPush, dataJoin,
-    duplicateNameCheck, WarNoop
 } from './../../common/common'
 
 
@@ -137,13 +135,15 @@ const NespressoTool = ({ dispatch, nespresso }) => {
                 </div>
                 <div className={styles.hovertext}
                     style={{ visibility: nespresso.cover ? 'visible' : 'hidden' }}>
-                    <p className={styles.hovertext}>Please drag the CWS here!</p>
+                    <p className={styles.hovertext} onDrop={handleDrop}>Please put the CWS here!</p>
                 </div>
-                <div className={styles.codeinput}>
+                <div className={styles.codeinput}
+                    style={{ visibility: nespresso.cover ? 'hidden' : 'visible' }}>
                     <textarea ref={(node) => code = node} placeholder="Place your code"></textarea>
                     <Button onClick={onTransferClick}>Click to transfer</Button>
                 </div>
-                <div className={styles.aliascontainer}>
+                <div className={styles.aliascontainer}
+                    style={{ visibility: nespresso.cover ? 'hidden' : 'visible' }}>
                     <ul>
                         {
                             nespresso.alias.map(data => (

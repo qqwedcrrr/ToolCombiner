@@ -11,8 +11,8 @@
   transform: translate(-50%, 0);
 }
 .masking {
-  width: 1500px;
-  height: 800px;
+  width: 900px;
+  height: 600px;
   background: #e6a23c;
   margin: 0 auto;
   position: relative;
@@ -24,7 +24,7 @@
   padding-top: 140px;
   color: #ffffff;
   position: absolute;
-  top: 80px;
+  top: 50px;
   left: 50%;
   width: 400px;
   transform: translate(-50%, 0);
@@ -59,8 +59,9 @@
   z-index: 1;
 }
 .buttoncontainer {
-  width: 700px;
+  width: 900px;
   text-align: left;
+  clear: both;
 }
 .buttoncontainer p {
   display: block;
@@ -77,14 +78,10 @@
   word-wrap: normal;
   overflow: hidden;
 }
-.buttoncontainer:after {
-  content: '';
-  clear: both;
-  width: 0;
-  height: 0;
-}
 .buttoncontainer .aliaslink {
-  width: 400px;
+  width: 600px;
   white-space: nowrap;
   word-wrap: normal;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
