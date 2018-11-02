@@ -1,6 +1,5 @@
 import XLSX from 'xlsx';
-import { func } from 'prop-types';
-
+// The function read the excel file and translate it into json.
 export function fileReader(f, brand) {
     let wb;
     let mainlist;
@@ -18,6 +17,7 @@ export function fileReader(f, brand) {
                     type: 'binary'
                 });
             }
+            //You could put your code here, it will return a promise value, you could use it in then.
             if (brand === 'onstar')
                 mainlist = onstarCheckSheet(wb.Sheets)
             else if (brand === 'nespresso')
@@ -35,7 +35,7 @@ export function fileReader(f, brand) {
         }
     })
 }
-
+// To find the target sheet in CWS
 export function onstarCheckSheet(sheet) {
     for (let prop in sheet) {
         if (prop.toLowerCase().includes('proof') && prop.toLowerCase().includes('seed') )
@@ -58,7 +58,7 @@ export function dateFixer(data) {
     o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
     return o;
 }
-
+//To handle the data, change it into form data.
 export function handleData(value) {
     let data = value.replace(/#|(><)/g, '')
     data = data.replace(/\#/g, "")
@@ -67,7 +67,7 @@ export function handleData(value) {
         .split('\n')
     return data.toString()
 }
-
+//if the arguments contain iproofFlag and eproofFlag, then it is handling the onstar data.
 export function infoFixer(list, iproofFlag, eproofFlag) {
     let length, clear;
     let deletBox = []
@@ -114,11 +114,11 @@ export function duplicateNameCheck(list, flag) {
     if (errorList.length > 0)
         return errorList
 }
-
+// To form the phone call ulr
 export function phonecallFixer(string){
     return string.match(/[0-9]/g).join().replace(/,/g,'')
 }
-
+//trim the data
 export function deleteSpace(list, header) {
     if (header) {
         for (let i = 0; i < list.length - 1; i++) {
@@ -130,7 +130,7 @@ export function deleteSpace(list, header) {
             list.pop();
     }
 }
-
+// Form the data length, make the data length as the same as table header.
 export function lengthFixer(list, flag) {
     for (let i = flag[0]; i < flag[flag.length - 1] + 1; i++) {
         if (i > flag[0] && i <= flag[1]) {
@@ -144,7 +144,7 @@ export function lengthFixer(list, flag) {
         }
     }
 }
-
+//This is a warning component.
 export const WarNoop = ({ errlist }) => {
     if (Array.isArray(errlist) && errlist.length > 0) {
         errlist = errlist.join('\n\/\n')
@@ -156,7 +156,7 @@ export const WarNoop = ({ errlist }) => {
             <span></span>
         )
 }
-
+//This function is to concat all the data into a string. Then we could download it by a tag download.
 export function dataJoin(data1, data2, data3) {
     let finalData = [];
     let data = [];
@@ -185,7 +185,7 @@ export function dataPush(list, flag1, flag2) {
     }
     return newlist;
 }
-
+// Download the proolist by a tag url
 export function downLoadData(filename, data) {
     data = encodeURIComponent(data)
     var downloadLink = document.createElement("a");

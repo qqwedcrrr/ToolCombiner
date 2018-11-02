@@ -1,7 +1,6 @@
 import styles from './index.css';
 import Link from 'umi/link';
 import router from 'umi/router';
-import {Button} from 'antd'
 
 export default function() {
   let autoRoute = localStorage.getItem('autoRoute')
@@ -13,8 +12,8 @@ export default function() {
       <p>To get started, choose a tool to go!</p>
       <div className={styles.linkcontainer}>
         <ul className={styles.list}>
-          <li><Button onClick={()=>{router.push('/nespresso');localStorage.setItem('autoRoute', '/nespresso');}} className={styles.gotolink}>Go to Nespresso Tool</Button></li>
-          <li><Button onClick={()=>{router.push('/onstar');localStorage.setItem('autoRoute', '/onstar');}} className={styles.gotolink}>Go to OnStar Tool</Button></li>
+          <li><button onClick={()=>{router.push('/nespresso');localStorage.setItem('autoRoute', '/nespresso');}} className="antButton">Go to Nespresso Tool</button></li>
+          <li><button onClick={()=>{router.push('/onstar');localStorage.setItem('autoRoute', '/onstar');}} className="antButton">Go to OnStar Tool</button></li>
         </ul>
       </div>
     </div>

@@ -4,10 +4,10 @@ export default {
   plugins: [
     // ref: https://umijs.org/plugin/umi-plugin-react.html
     ['umi-plugin-react', {
-      antd: true,
+      antd: false,
       dva: true,
       dynamicImport: true,
-      title: 'umi',
+      title: 'Tool Combiner',
       dll: true,
       pwa: false,
       routes: {

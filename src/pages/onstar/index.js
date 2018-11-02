@@ -7,7 +7,6 @@ import {
     duplicateNameCheck, WarNoop
 } from './../../common/common'
 import router from 'umi/router';
-import { Button } from 'antd'
 
 
 class Tool extends Component {
@@ -183,12 +182,12 @@ class Tool extends Component {
                     <p className={styles.hovertext} onDrop={this.handleDrop}>Please put the CWS here</p>
                 </div>
                 <div className={styles.goback}>
-                    <Button onClick={() => {
+                    <button className="antButton" onClick={() => {
                         localStorage.removeItem('autoRoute');
                         router.push('/');
                     }}>
                         Go Back
-                    </Button>
+                    </button>
                 </div>
             </div>
         )

@@ -1,6 +1,5 @@
 import styles from './index.less';
 import router from 'umi/router';
-import { Button } from 'antd';
 import { connect } from 'dva';
 import {
     fileReader,
@@ -13,12 +12,12 @@ let ButtonAlias = ({ alias, dispatch }) => {
         <div>
             <div className={styles.buttoncontainer}>
                 <p className={styles.aliasname}>{alias.aliasName}</p>
-                <Button style={{ float: 'left' }} onClick={() => {
+                <button className="antButton" style={{ float: 'left' }} onClick={() => {
                     dispatch({ type: 'nespresso/addNum', payload: alias.id })
-                }}>+</Button>
-                <Button style={{ float: 'left' }} onClick={() => {
+                }}>+</button>
+                <button className="antButton" style={{ float: 'left' }} onClick={() => {
                     dispatch({ type: 'nespresso/reduceNum', payload: alias.id })
-                }}>-</Button>
+                }}>-</button>
                 <p>{alias.num}</p>
                 <p className={styles.aliaslink}>{alias.link}</p>
             </div>
@@ -113,7 +112,6 @@ const NespressoTool = ({ dispatch, nespresso }) => {
                         code.value = code.value.replace("Alias_Defined_in_CWS",alias[i].aliasName+"_"+num)     
                     }
                 }
-                console.log(alias[i].aliasName,alias[i].link)
                 if(alias[i].link.toLowerCase().includes('tell:')){
                     code.value = code.value.replace(/(href=").*?\?_*(URL_REPLACE).*?"/,'href="'+alias[i].link+'"')
                 }else{
@@ -126,6 +124,7 @@ const NespressoTool = ({ dispatch, nespresso }) => {
     return (
         <div className={styles.container}>
             <div className={styles.maincontainer}>
+                <p style={{fontSize:26,visibility: nespresso.cover ? 'visible' : 'hidden'}}>Here is the nespresso alias &amp; link tool.</p>
                 <div className={styles.masking}
                     style={{ background: nespresso.bgcolor, visibility: nespresso.cover ? 'visible' : 'hidden' }}
                     onDragOver={handleDragOver}
@@ -140,7 +139,7 @@ const NespressoTool = ({ dispatch, nespresso }) => {
                 <div className={styles.codeinput}
                     style={{ visibility: nespresso.cover ? 'hidden' : 'visible' }}>
                     <textarea ref={(node) => code = node} placeholder="Place your code"></textarea>
-                    <Button onClick={onTransferClick}>Click to transfer</Button>
+                    <button className="antButton" onClick={onTransferClick}>Click to transfer</button>
                 </div>
                 <div className={styles.aliascontainer}
                     style={{ visibility: nespresso.cover ? 'hidden' : 'visible' }}>
@@ -154,12 +153,12 @@ const NespressoTool = ({ dispatch, nespresso }) => {
                 </div>
             </div>
             <div className={styles.goback}>
-                <Button onClick={() => {
+                <button className="antButton" onClick={() => {
                     localStorage.removeItem('autoRoute');
                     router.push('/');
                 }}>
                     Go Back
-                    </Button>
+                    </button>
             </div>
         </div>
     )
